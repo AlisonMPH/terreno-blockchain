@@ -1,0 +1,136 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "API de Propriedades",
+      "version": "1.0.0",
+      "description": "API para gerenciar propriedades em um banco de dados SQLite."
+    },
+    "paths": {
+      "/propriedades": {
+        "post": {
+          "summary": "Salvar uma nova propriedade",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "price": {
+                      "type": "number"
+                    },
+                    "transactionHash": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["name", "price", "transactionHash"]
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Propriedade salva com sucesso"
+              },
+              "500": {
+                "description": "Erro ao salvar no banco de dados"
+              }
+            }
+          }
+        },
+        "get": {
+          "summary": "Listar todas as propriedades",
+          "responses": {
+            "200": {
+              "description": "Lista de propriedades",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "name": { "type": "string" },
+                        "price": { "type": "number" },
+                        "transactionHash": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Erro ao buscar propriedades"
+            }
+          }
+        }
+      },
+      "/propriedades/{id}": {
+        "get": {
+          "summary": "Obter uma propriedade específica por ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Propriedade encontrada",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "integer" },
+                      "name": { "type": "string" },
+                      "price": { "type": "number" },
+                      "transactionHash": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Propriedade não encontrada"
+            },
+            "500": {
+              "description": "Erro ao buscar propriedade"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Excluir uma propriedade",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Propriedade excluída com sucesso"
+            },
+            "404": {
+              "description": "Propriedade não encontrada"
+            },
+            "500": {
+              "description": "Erro ao excluir propriedade"
+            }
+          }
+        }
+      }
+    }
+  }
+  

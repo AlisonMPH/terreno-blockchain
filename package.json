@@ -10,12 +10,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.7.7",
+    "body-parser": "^1.20.3",
     "bootstrap": "^5.3.3",
+    "cors": "^2.8.5",
     "ethers": "^6.13.3",
+    "express": "^4.21.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.5",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.26.2",
+    "sqlite3": "https://github.com/tryghost/node-sqlite3/tarball/master",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "web3": "^4.11.1"
   },
   "devDependencies": {

@@ -1,23 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
-import RealEstateContract from '../artifacts/RealEstateContract.json'; // Ajuste o caminho conforme necessário
+import axios from 'axios'; // Certifique-se de instalar o axios
+import propertyImage from './assets/imagem.png'; // Importando a imagem
 
 const PropertyList = () => {
   const [properties, setProperties] = useState([]);
 
   const fetchProperties = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const contract = new ethers.Contract(REAL_ESTATE_CONTRACT_ADDRESS, RealEstateContract.abi, provider);
-
-    const propertyCount = await contract.propertyCount();
-    const propertyArray = [];
-
-    for (let i = 1; i <= propertyCount; i++) {
-      const property = await contract.getProperty(i);
-      propertyArray.push(property);
+    try {
+      // Altere a URL para apontar para sua API
+      const response = await axios.get('http://localhost:5000/propriedades');
+      setProperties(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar propriedades:", error);
     }
-
-    setProperties(propertyArray);
   };
 
   useEffect(() => {
@@ -30,7 +25,11 @@ const PropertyList = () => {
       <ul>
         {properties.map((property) => (
           <li key={property.id}>
-            {property.location} - {ethers.utils.formatEther(property.price)} ETH
+            <img src={propertyImage} alt={property.name} style={{ width: '100px', height: 'auto' }} />
+            <div>
+              <strong>{property.name}</strong> - {property.price} ETH <br />
+              (Transação: {property.transactionHash})
+            </div>
           </li>
         ))}
       </ul>

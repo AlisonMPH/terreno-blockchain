@@ -21,15 +21,25 @@ const BuyProperty = () => {
                     signer
                 );
 
-                const propertiesCount = await contract.propertiesCount();
-                const propertyList = [];
+                try {
+                    const propertiesCount = await contract.propertiesCount();
+                    const propertyList = [];
 
-                for (let i = 1; i <= propertiesCount; i++) {
-                    const property = await contract.getProperty(i);
-                    propertyList.push(property);
+                    for (let i = 1; i <= propertiesCount; i++) {
+                        const property = await contract.getProperty(i);
+                        propertyList.push({
+                            id: property.id.toString(),
+                            name: property.name,
+                            price: ethers.utils.formatEther(property.price), // Convertendo para ETH
+                            owner: property.owner,
+                            sold: property.sold,
+                        });
+                    }
+
+                    setProperties(propertyList);
+                } catch (error) {
+                    console.error("Erro ao carregar propriedades:", error);
                 }
-
-                setProperties(propertyList);
             } else {
                 console.error("Ethereum object doesn't exist!");
             }
@@ -54,6 +64,7 @@ const BuyProperty = () => {
                 setModalMessage("Propriedade comprada com sucesso!");
                 setShowModal(true); // Exibir a modal
             } catch (error) {
+                console.error("Erro ao comprar propriedade:", error);
                 setModalMessage("Erro ao comprar a propriedade. Tente novamente.");
                 setShowModal(true); // Exibir a modal
             }
@@ -69,9 +80,19 @@ const BuyProperty = () => {
             <h2>Comprar Propriedade</h2>
             <ul>
                 {properties.map((property) => (
-                    <li key={property.id.toString()}>
-                        {property.name} - {ethers.utils.formatEther(property.price)} ETH
-                        <button onClick={() => buyProperty(property.id.toString())}>Comprar</button>
+                    <li key={property.id}>
+                        {property.name} - {property.price} ETH
+                        {property.sold ? (
+                            <span> (Vendido)</span>
+                        ) : (
+                            <button onClick={() => {
+                                setSelectedProperty(property.id);
+                                setAmount(property.price); // Preenche automaticamente o valor
+                                buyProperty(property.id);
+                            }}>
+                                Comprar
+                            </button>
+                        )}
                     </li>
                 ))}
             </ul>
