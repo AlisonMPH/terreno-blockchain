@@ -1,73 +1,33 @@
-import React, { useState, useEffect } from "react";
-import { ethers } from "ethers";
-import RealEstateContract from "../artifacts/RealEstateContract.json";
+import React, { useState } from "react";
 import NotificationModal from "./NotificationModal"; // Importando a modal
+import "/src/css/BuyProperty.css"; // Estilos externos
 
 const BuyProperty = () => {
-    const [properties, setProperties] = useState([]);
+    // Propriedades fictícias para testes, incluindo tamanho e localização
+    const [properties, setProperties] = useState([
+        { id: 1, name: "Casa de Praia", price: "3.0", sold: false, imgUrl: "/src/assets/praia.jfif", size: "120 m²", location: "Praia do Leste" },
+        { id: 2, name: "Apartamento no Centro", price: "2.5", sold: true, imgUrl: "/src/assets/apartamento.webp", size: "80 m²", location: "Centro" },
+        { id: 3, name: "Chácara no Interior", price: "4.2", sold: false, imgUrl: "/src/assets/chacara.jfif", size: "300 m²", location: "Zona Rural" }
+    ]);
+
     const [selectedProperty, setSelectedProperty] = useState(null);
-    const [amount, setAmount] = useState("");
-    const [showModal, setShowModal] = useState(false); // Estado para controlar a modal
+    const [showModal, setShowModal] = useState(false); // Estado para controlar o modal de confirmação
     const [modalMessage, setModalMessage] = useState(""); // Mensagem da modal
 
-    useEffect(() => {
-        const fetchProperties = async () => {
-            if (typeof window.ethereum !== "undefined") {
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                const signer = provider.getSigner();
-                const contract = new ethers.Contract(
-                    RealEstateContract.address,
-                    RealEstateContract.abi,
-                    signer
-                );
+    const confirmPurchase = (propertyId) => {
+        const property = properties.find(p => p.id === propertyId);
+        if (property) {
+            setSelectedProperty(property); // Seleciona a propriedade para a confirmação
+            setModalMessage(`Você deseja comprar a propriedade ${property.name} por ${property.price} ETH?`);
+            setShowModal(true); // Exibe a modal para confirmação
+        }
+    };
 
-                try {
-                    const propertiesCount = await contract.propertiesCount();
-                    const propertyList = [];
-
-                    for (let i = 1; i <= propertiesCount; i++) {
-                        const property = await contract.getProperty(i);
-                        propertyList.push({
-                            id: property.id.toString(),
-                            name: property.name,
-                            price: ethers.utils.formatEther(property.price), // Convertendo para ETH
-                            owner: property.owner,
-                            sold: property.sold,
-                        });
-                    }
-
-                    setProperties(propertyList);
-                } catch (error) {
-                    console.error("Erro ao carregar propriedades:", error);
-                }
-            } else {
-                console.error("Ethereum object doesn't exist!");
-            }
-        };
-
-        fetchProperties();
-    }, []);
-
-    const buyProperty = async (propertyId) => {
-        if (typeof window.ethereum !== "undefined") {
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-            const contract = new ethers.Contract(
-                RealEstateContract.address,
-                RealEstateContract.abi,
-                signer
-            );
-
-            try {
-                const tx = await contract.buyProperty(propertyId, { value: ethers.utils.parseEther(amount) });
-                await tx.wait();
-                setModalMessage("Propriedade comprada com sucesso!");
-                setShowModal(true); // Exibir a modal
-            } catch (error) {
-                console.error("Erro ao comprar propriedade:", error);
-                setModalMessage("Erro ao comprar a propriedade. Tente novamente.");
-                setShowModal(true); // Exibir a modal
-            }
+    const buyProperty = () => {
+        if (selectedProperty) {
+            setModalMessage(`Propriedade ${selectedProperty.name} comprada com sucesso!`);
+            setShowModal(true); // Exibe a mensagem de sucesso após a compra
+            setSelectedProperty(null); // Limpa a propriedade selecionada
         }
     };
 
@@ -76,32 +36,34 @@ const BuyProperty = () => {
     };
 
     return (
-        <div>
-            <h2>Comprar Propriedade</h2>
-            <ul>
+        <div className="property-container">
+            <h2 className="title">Propriedades à Venda</h2>
+            <div className="property-list">
                 {properties.map((property) => (
-                    <li key={property.id}>
-                        {property.name} - {property.price} ETH
+                    <div key={property.id} className="property-card">
+                        <img src={property.imgUrl} alt={property.name} className="property-image" />
+                        <h3 className="property-name">{property.name}</h3>
+                        <p className="property-price">{property.price} ETH</p>
+                        <p className="property-size">Tamanho: {property.size}</p> {/* Tamanho da propriedade */}
+                        <p className="property-location">Localização: {property.location}</p> {/* Localização da propriedade */}
                         {property.sold ? (
-                            <span> (Vendido)</span>
+                            <span className="sold-badge">Vendido</span>
                         ) : (
-                            <button onClick={() => {
-                                setSelectedProperty(property.id);
-                                setAmount(property.price); // Preenche automaticamente o valor
-                                buyProperty(property.id);
-                            }}>
+                            <button className="buy-button" onClick={() => confirmPurchase(property.id)}>
                                 Comprar
                             </button>
                         )}
-                    </li>
+                    </div>
                 ))}
-            </ul>
+            </div>
 
-            {/* Modal de notificação */}
+            {/* Modal de confirmação ou notificação */}
             <NotificationModal
                 show={showModal}
                 handleClose={handleCloseModal}
                 message={modalMessage}
+                isConfirmation={!!selectedProperty} // Se há propriedade selecionada, é um modal de confirmação
+                onConfirm={buyProperty} // Ação ao confirmar a compra
             />
         </div>
     );

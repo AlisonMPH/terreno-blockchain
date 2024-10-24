@@ -1,0 +1,56 @@
+.home-container {
+    padding: 30px;
+    max-width: 600px; /* Largura máxima para um layout mais compacto */
+    margin: 0 auto; /* Centraliza o conteúdo */
+    text-align: center; /* Centraliza o texto */
+    background-color: #f9f9f9; /* Fundo suave */
+    border-radius: 12px; /* Bordas arredondadas */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra leve */
+}
+
+.home-container h1 {
+    color: #2c3e50; /* Cor do título */
+    font-size: 2em; /* Tamanho do título */
+    margin-bottom: 10px; /* Espaçamento abaixo do título */
+}
+
+.home-container p {
+    font-size: 1.1em; /* Tamanho do texto */
+    line-height: 1.5; /* Espaçamento entre linhas */
+    color: #555; /* Cor do texto */
+    margin-bottom: 20px; /* Espaçamento abaixo do parágrafo */
+}
+
+.features-section {
+    margin: 20px 0; /* Espaçamento acima e abaixo da seção de recursos */
+}
+
+.features-section h2 {
+    color: #2980b9; /* Cor do título da seção */
+    font-size: 1.5em; /* Tamanho do título da seção */
+    margin-bottom: 15px; /* Espaçamento abaixo do título da seção */
+}
+
+.features-section ul {
+    list-style-type: none; /* Remove marcadores da lista */
+    padding: 0; /* Remove preenchimento da lista */
+}
+
+.features-section li {
+    background-color: #ffffff; /* Fundo branco para cada item */
+    border: 1px solid #ddd; /* Borda leve */
+    border-radius: 8px; /* Bordas arredondadas */
+    padding: 10px; /* Preenchimento interno */
+    margin-bottom: 10px; /* Espaçamento entre os itens */
+    transition: background-color 0.3s; /* Efeito de transição */
+}
+
+.features-section li:hover {
+    background-color: #e0f7fa; /* Cor de fundo ao passar o mouse */
+}
+
+footer {
+    margin-top: 30px; /* Espaçamento acima do footer */
+    font-size: 0.9em; /* Tamanho de fonte menor para o footer */
+    color: #7f8c8d; /* Cor do texto do footer */
+}

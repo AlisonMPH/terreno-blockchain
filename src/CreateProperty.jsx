@@ -8,6 +8,8 @@ const REAL_ESTATE_CONTRACT_ADDRESS = "0xSEU_CONTRATO_AQUI"; // Endereço do cont
 const CreateProperty = () => {
   const [name, setName] = useState(''); // Campo para o nome da propriedade
   const [price, setPrice] = useState('');
+  const [tamanho, setTamanho] = useState('');
+  const [local, setLocal] = useState('');
   const [loading, setLoading] = useState(false); // Controle de loading
   const [message, setMessage] = useState(''); // Feedback visual
 
@@ -21,6 +23,16 @@ const CreateProperty = () => {
 
     if (parseFloat(price) <= 0) {
       setMessage('O preço deve ser maior que zero.');
+      return;
+    }
+
+    if (!locsl.trim()) {
+      setMessage('A Localização da propriedade é obrigatório.');
+      return;
+    }
+
+    if (parseFloat(tamanho) <= 0) {
+      setMessage('O tamanho deve ser maior que zero.');
       return;
     }
 
@@ -40,11 +52,11 @@ const CreateProperty = () => {
       await tx.wait(); // Aguarda a confirmação da transação
 
       // Após criar na blockchain, envia uma requisição ao backend para salvar no SQLite
-      await axios.post('http://localhost:5000/propriedades', {
-        name,
-        price,
-        transactionHash: "" //& tx.hash // Passando o hash da transação
-      });
+      //await axios.post('http://localhost:5000/propriedades', {
+      //  name,
+      // price,
+      //  transactionHash: "" //& tx.hash // Passando o hash da transação
+      //});
 
       //setMessage('Propriedade criada com sucesso na blockchain e no banco de dados local!');
       setName(''); // Limpa os campos
@@ -59,13 +71,27 @@ const CreateProperty = () => {
 
   return (
     <div>
-      <h2>Criar Propriedade</h2>
+      <h2>Informe os dados da Propriedade</h2>
       <form onSubmit={createProperty}>
-        <input
+      <input
           type="text"
           placeholder="Nome da Propriedade"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Tamanho M²"
+          value={tamanho}
+          onChange={(e) => setTamanho(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Localização"
+          value={local}
+          onChange={(e) => setLocal(e.target.value)}
           required
         />
         <input
@@ -76,7 +102,7 @@ const CreateProperty = () => {
           required
         />
         <button type="submit" disabled={loading}>
-          {loading ? 'Criando...' : 'Criar Propriedade'}
+          {loading ? 'Anunciando...' : 'Anunciar Propriedade'}
         </button>
       </form>
       {message && <p>{message}</p>} {/* Exibe mensagens de feedback */}

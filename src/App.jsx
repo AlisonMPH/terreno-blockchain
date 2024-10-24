@@ -5,7 +5,7 @@ import CreateProperty from './CreateProperty'; // Componente para criar propried
 import BuyProperty from './BuyProperty'; // Componente para comprar propriedades
 import PropertyList from './PropertyList'; // Componente para listar propriedades
 import { Route, BrowserRouter, Routes } from 'react-router-dom';
-import './Style.css';
+import '/src/css/Style.css';
 
 function App() {
   return (

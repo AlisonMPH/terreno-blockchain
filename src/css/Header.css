@@ -1,0 +1,34 @@
+/* Header.css */
+
+.navbar {
+    border-bottom: 2px solid #007bff; /* Adiciona uma linha na parte inferior do navbar */
+    position: fixed;
+    top: 0; /* Posiciona o cabeçalho no topo da tela */
+    left: 0; /* Garante que o cabeçalho comece na borda esquerda */
+    right: 0; /* Garante que o cabeçalho se estenda até a borda direita */
+    z-index: 1000; /* Garante que o cabeçalho fique acima de outros elementos */
+}
+
+body {
+    padding-top: 90px; /* Adiciona um espaço no topo do conteúdo para evitar sobreposição */
+}
+
+.nav-link {
+    font-size: 18px; /* Aumenta o tamanho da fonte para melhor legibilidade */
+    margin: 0 15px; /* Espaçamento entre os links */
+    transition: color 0.3s ease; /* Adiciona transição suave para a cor */
+}
+
+.nav-link:hover {
+    color: #007bff; /* Muda a cor do link ao passar o mouse */
+}
+
+.nav-link.active {
+    font-weight: bold; /* Destaca o link ativo */
+    border-bottom: 2px solid #007bff; /* Adiciona uma linha abaixo do link ativo */
+}
+
+.navbar-brand {
+    font-size: 24px; /* Aumenta o tamanho da fonte do título */
+    font-weight: bold; /* Destaca o título */
+}
