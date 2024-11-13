@@ -1,5 +1,29 @@
 /* BuyProperty.css */
 
+/* Estilo para o Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Garantir que o modal fique acima de outros elementos */
+}
+
+/* Estilo para o conteúdo do Modal */
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
 .property-container {
     padding: 20px;
     max-width: 1200px;

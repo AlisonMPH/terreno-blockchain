@@ -19,6 +19,7 @@
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.5",
     "react-dom": "^18.2.0",
+    "react-input-mask": "^2.0.4",
     "react-router-dom": "^6.26.2",
     "sqlite3": "https://github.com/tryghost/node-sqlite3/tarball/master",
     "swagger-jsdoc": "^6.2.8",

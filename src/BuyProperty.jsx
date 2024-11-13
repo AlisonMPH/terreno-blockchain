@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import NotificationModal from "./NotificationModal"; // Importando a modal
-import "/src/css/BuyProperty.css"; // Estilos externos
+import NotificationModalConfirm from "./NotificationModalConfirm";
+import NotificationModalResult from "./NotificationModalResult";
+import InputMask from 'react-input-mask';
+import "/src/css/BuyProperty.css"; 
 
 const BuyProperty = () => {
-    // Propriedades fictícias para testes, incluindo tamanho e localização
     const [properties, setProperties] = useState([
         { id: 1, name: "Casa de Praia", price: "3.0", sold: false, imgUrl: "/src/assets/praia.jfif", size: "120 m²", location: "Praia do Leste" },
         { id: 2, name: "Apartamento no Centro", price: "2.5", sold: true, imgUrl: "/src/assets/apartamento.webp", size: "80 m²", location: "Centro" },
@@ -11,61 +12,110 @@ const BuyProperty = () => {
     ]);
 
     const [selectedProperty, setSelectedProperty] = useState(null);
-    const [showModal, setShowModal] = useState(false); // Estado para controlar o modal de confirmação
-    const [modalMessage, setModalMessage] = useState(""); // Mensagem da modal
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [showResultModal, setShowResultModal] = useState(false);
+    const [modalMessage, setModalMessage] = useState("");
+    const [cpf, setCpf] = useState("");
 
+    // Função para confirmar a compra e exibir a modal de CPF
     const confirmPurchase = (propertyId) => {
         const property = properties.find(p => p.id === propertyId);
         if (property) {
-            setSelectedProperty(property); // Seleciona a propriedade para a confirmação
+            setSelectedProperty(property);
             setModalMessage(`Você deseja comprar a propriedade ${property.name} por ${property.price} ETH?`);
-            setShowModal(true); // Exibe a modal para confirmação
+            setShowConfirmModal(true);  
         }
     };
 
+    // Função que processa a compra e exibe o resultado (sucesso ou erro)
     const buyProperty = () => {
         if (selectedProperty) {
-            setModalMessage(`Propriedade ${selectedProperty.name} comprada com sucesso!`);
-            setShowModal(true); // Exibe a mensagem de sucesso após a compra
-            setSelectedProperty(null); // Limpa a propriedade selecionada
+            const cleanedCpf = cpf.replace(/\D/g, '');
+            if (!cleanedCpf || cleanedCpf.length !== 11) {
+                // Exibe a modal de erro, pois o CPF é inválido
+                setModalMessage("CPF inválido, tente novamente.");
+                setShowResultModal(true);  // Exibe a modal de falha
+                setShowConfirmModal(false);  // Fecha a modal de confirmação
+                return;
+            }
+            
+            // Exibe a modal de sucesso com a compra
+            setModalMessage(`Propriedade ${selectedProperty.name} comprada com sucesso! CPF: ${cpf}`);
+            setShowResultModal(true);  // Exibe a modal de sucesso
+            setShowConfirmModal(false);  // Fecha a modal de confirmação
+            setSelectedProperty(null);   // Limpa a propriedade selecionada
+            setCpf("");  // Limpa o CPF
         }
     };
 
-    const handleCloseModal = () => {
-        setShowModal(false); // Fechar a modal
+    const handleCloseConfirmModal = () => {
+        setShowConfirmModal(false);
+    };
+
+    const handleCloseResultModal = () => {
+        setShowResultModal(false);
     };
 
     return (
-        <div className="property-container">
-            <h2 className="title">Propriedades à Venda</h2>
-            <div className="property-list">
-                {properties.map((property) => (
-                    <div key={property.id} className="property-card">
-                        <img src={property.imgUrl} alt={property.name} className="property-image" />
-                        <h3 className="property-name">{property.name}</h3>
-                        <p className="property-price">{property.price} ETH</p>
-                        <p className="property-size">Tamanho: {property.size}</p> {/* Tamanho da propriedade */}
-                        <p className="property-location">Localização: {property.location}</p> {/* Localização da propriedade */}
-                        {property.sold ? (
-                            <span className="sold-badge">Vendido</span>
-                        ) : (
-                            <button className="buy-button" onClick={() => confirmPurchase(property.id)}>
-                                Comprar
-                            </button>
-                        )}
-                    </div>
-                ))}
-            </div>
+        <>
+            <div className="property-container">
+                <h2 className="title">Propriedades à Venda</h2>
+                <div className="property-list">
+                    {properties.map((property) => (
+                        <div key={property.id} className="property-card">
+                            <img src={property.imgUrl} alt={property.name} className="property-image" />
+                            <h3 className="property-name">{property.name}</h3>
+                            <p className="property-price">{property.price} ETH</p>
+                            <p className="property-size">Tamanho: {property.size}</p>
+                            <p className="property-location">Localização: {property.location}</p>
+                            {property.sold ? (
+                                <span className="sold-badge">Vendido</span>
+                            ) : (
+                                <button onClick={() => confirmPurchase(property.id)}>Comprar</button>
+                            )}
+                        </div>
+                    ))}
+                </div>
 
-            {/* Modal de confirmação ou notificação */}
-            <NotificationModal
-                show={showModal}
-                handleClose={handleCloseModal}
-                message={modalMessage}
-                isConfirmation={!!selectedProperty} // Se há propriedade selecionada, é um modal de confirmação
-                onConfirm={buyProperty} // Ação ao confirmar a compra
-            />
-        </div>
+                {/* Modal de confirmação de compra */}
+                {showConfirmModal && (
+                    <div className="modal-overlay">
+                        <NotificationModalConfirm
+                            show={showConfirmModal}
+                            handleClose={handleCloseConfirmModal}
+                            message={modalMessage}
+                            onConfirm={buyProperty}  // Passa a função de confirmação para o botão
+                        >
+                            <InputMask
+                                mask="999.999.999-99" // Máscara de CPF
+                                value={cpf}
+                                onChange={(e) => setCpf(e.target.value)}
+                            >
+                                {(inputProps) => (
+                                    <input
+                                        {...inputProps}
+                                        type="text"
+                                        className="modal-input"
+                                        placeholder="Digite seu CPF"
+                                    />
+                                )}
+                            </InputMask>
+                        </NotificationModalConfirm>
+                    </div>
+                )}
+
+                {/* Modal de resultado de compra */}
+                {showResultModal && (
+                    <div className="modal-overlay">
+                        <NotificationModalResult
+                            show={showResultModal}
+                            handleClose={handleCloseResultModal}
+                            message={modalMessage}
+                        />
+                    </div>
+                )}
+            </div>
+        </>
     );
 };
 
