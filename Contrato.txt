@@ -1,0 +1,93 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract RealEstate {
+
+    struct Property {
+        uint256 id;
+        string name;
+        string location;
+        uint256 size; // Tamanho em metros quadrados
+        uint256 price; // Preço em wei (1 ETH = 10^18 wei)
+        address owner; // Proprietário atual da propriedade
+        bool isSold; // Marca se a propriedade foi vendida
+        string sellerCpf; // CPF do vendedor
+        string buyerCpf; // CPF do comprador
+    }
+
+    mapping(uint256 => Property) public properties;
+    uint256 public propertyCount;
+
+    // Evento para emitir quando uma nova propriedade for criada
+    event PropertyListed(uint256 propertyId, string name, uint256 price, string location, uint256 size, string sellerCpf);
+
+    // Evento para emitir quando uma propriedade for comprada
+    event PropertyPurchased(uint256 propertyId, address newOwner, uint256 price, string buyerCpf);
+
+    // Função para listar uma nova propriedade para venda
+    function listProperty(
+        string memory _name, 
+        uint256 _price, 
+        string memory _location, 
+        uint256 _size, 
+        string memory _sellerCpf
+    ) public {
+        require(_price > 0, "O preço deve ser maior que zero.");
+        require(_size > 0, "O tamanho deve ser maior que zero.");
+        require(bytes(_sellerCpf).length > 0, "O CPF do vendedor é obrigatório.");
+
+        propertyCount++;
+        properties[propertyCount] = Property(
+            propertyCount,
+            _name,
+            _location,
+            _size,
+            _price,
+            msg.sender,  // O criador da propriedade é o proprietário inicial
+            false,       // Inicialmente, a propriedade não está vendida
+            _sellerCpf,  // CPF do vendedor
+            ""           // CPF do comprador vazio inicialmente
+        );
+
+        emit PropertyListed(propertyCount, _name, _price, _location, _size, _sellerCpf);
+    }
+
+    // Função para comprar uma propriedade
+    function buyProperty(uint256 _propertyId, string memory _buyerCpf) public payable {
+        Property storage property = properties[_propertyId];
+
+        // Verificar se a propriedade existe
+        require(_propertyId > 0 && _propertyId <= propertyCount, "Propriedade inválida.");
+        // Verificar se a propriedade já foi vendida
+        require(!property.isSold, "Esta propriedade já foi vendida.");
+        // Verificar se o valor enviado é suficiente para cobrir o preço
+        require(msg.value >= property.price, "Valor insuficiente para comprar esta propriedade.");
+        // Verificar se o CPF do comprador foi fornecido
+        require(bytes(_buyerCpf).length > 0, "O CPF do comprador é obrigatório.");
+
+        // Transferir o pagamento para o proprietário atual
+        payable(property.owner).transfer(msg.value);
+
+        // Atualizar a propriedade para refletir a compra
+        property.isSold = true;
+        property.owner = msg.sender;  // Novo proprietário
+        property.buyerCpf = _buyerCpf; // Armazenar o CPF do comprador
+
+        emit PropertyPurchased(_propertyId, msg.sender, msg.value, _buyerCpf);
+    }
+
+    // Função para consultar as propriedades cadastradas
+    function getProperty(uint256 _propertyId) public view returns (string memory, string memory, uint256, uint256, bool, string memory, string memory) {
+        Property memory property = properties[_propertyId];
+        return (property.name, property.location, property.size, property.price, property.isSold, property.sellerCpf, property.buyerCpf);
+    }
+
+    // Função para consultar todas as propriedades cadastradas (para fins de visualização)
+    function getAllProperties() public view returns (Property[] memory) {
+        Property[] memory allProperties = new Property[](propertyCount);
+        for (uint256 i = 1; i <= propertyCount; i++) {
+            allProperties[i - 1] = properties[i];
+        }
+        return allProperties;
+    }
+}
