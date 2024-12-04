@@ -32,9 +32,9 @@ contract RealEstate {
         uint256 _size, 
         string memory _sellerCpf
     ) public {
-        require(_price > 0, "O preço deve ser maior que zero.");
+        require(_price > 0, "O preco deve ser maior que zero.");
         require(_size > 0, "O tamanho deve ser maior que zero.");
-        require(bytes(_sellerCpf).length > 0, "O CPF do vendedor é obrigatório.");
+        require(bytes(_sellerCpf).length > 0, "O CPF do vendedor e obrigatorio.");
 
         propertyCount++;
         properties[propertyCount] = Property(
@@ -57,13 +57,13 @@ contract RealEstate {
         Property storage property = properties[_propertyId];
 
         // Verificar se a propriedade existe
-        require(_propertyId > 0 && _propertyId <= propertyCount, "Propriedade inválida.");
+        require(_propertyId > 0 && _propertyId <= propertyCount, "Propriedade invalida.");
         // Verificar se a propriedade já foi vendida
-        require(!property.isSold, "Esta propriedade já foi vendida.");
+        require(!property.isSold, "Esta propriedade ja foi vendida.");
         // Verificar se o valor enviado é suficiente para cobrir o preço
         require(msg.value >= property.price, "Valor insuficiente para comprar esta propriedade.");
         // Verificar se o CPF do comprador foi fornecido
-        require(bytes(_buyerCpf).length > 0, "O CPF do comprador é obrigatório.");
+        require(bytes(_buyerCpf).length > 0, "O CPF do comprador e obrigatorio.");
 
         // Transferir o pagamento para o proprietário atual
         payable(property.owner).transfer(msg.value);
